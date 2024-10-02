@@ -47,8 +47,29 @@ var financeController = (function(){
             inc: 0,
             exp: 0,
         }
-    }
+    };
 
+    return {
+        addItem: function(type, desc, val){
+            var item, id;
+
+            // identification
+            if(data.items[type].length === 0) id = 1;
+            else{
+                id = data.items[type][data.items[type].length - 1].id + 1;
+            }
+
+
+            if(type=== 'inc' ){
+                item = new Income(id, desc, val);
+            }
+            else{
+                item = new Expense(id, desc, val);
+            }
+
+            data.items[type].push(item);
+        }
+    };
 })(); 
 
 
@@ -58,8 +79,10 @@ var appController = (function(uiController, financeController){
     var ctrlAddItem = function(){
 
         // оруулах өгөгдөлийг олж авах
-        console.log(uiController.getInput());
+        var input = uiController.getInput();
         // олж авсан өгөгдөлөө санхүүгийн конироллер дамжуулна
+        financeController.addItem(input.type, input.description, input.value);
+
         
         // олж авсан өгөгдөлийг веб дээрх тохирох хэсэгт гаргана
         
