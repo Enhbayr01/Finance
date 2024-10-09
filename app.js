@@ -8,6 +8,10 @@ var uiController = (function(){
         addBtn: ".add__btn",
         incList: '.income__list',
         expList: '.expenses__list',
+        tusuvLabel: '.budget__value',
+        incomeLabel: '.budget__income--value',
+        expenseLabel: '.budget__expenses--value',
+        persentageLabel: '.budget__expenses--percentage'
     };
 
     return {
@@ -39,17 +43,34 @@ var uiController = (function(){
         },
 
 
+        tusviigUzuuleh: function(tusuv){
+            document.querySelector(DOMstrings.tusuvLabel).textContent = tusuv.tusuv;
+            document.querySelector(DOMstrings.incomeLabel).textContent = tusuv.totalInc;
+            document.querySelector(DOMstrings.expenseLabel).textContent = tusuv.totalExp;
+            if(tusuv.huvi !== 0){
+                document.querySelector(DOMstrings.persentageLabel).textContent = tusuv.huvi + '%';
+            }else{
+                document.querySelector(DOMstrings.persentageLabel).textContent = tusuv.huvi;
+            }
+          
 
+        },
+
+
+        // tusuv: data.tusuv,
+        // huvi: data.huvi,
+        // totalInc: data.totals.inc,
+        // totalExp: data.totals.exp
 
         addListItem: function(item, type){
             
             var html, art;
             if(type === "inc"){
                 list = DOMstrings.incList;
-                html = '<div class="item clearfix" id="income-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value">+ $$VALUE$$<div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+                html = '<div class="item clearfix" id="income-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value">+ $$VALUE$$</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }else{
                 list = DOMstrings.expList;
-                html = '<div class="item clearfix" id="expense-%id%"><divclass="item__description">$$DESCRIPTION$$</divclass=><div class="right clearfix"><div class="item__value">- $$VALUE$$</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+                html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value">- $$VALUE$$</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }
 
             html = html.replace("%id%", item.id);
@@ -57,6 +78,8 @@ var uiController = (function(){
             html = html.replace("$$VALUE$$", item.value);
 
             document.querySelector(list).insertAdjacentHTML("beforeend", html);
+
+
 
 
 
@@ -125,7 +148,7 @@ var financeController = (function(){
         tusviigAvah: function(){
             return{
                 tusuv: data.tusuv,
-                hivi: data.huvi,
+                huvi: data.huvi,
                 totalInc: data.totals.inc,
                 totalExp: data.totals.exp
             }
@@ -189,7 +212,7 @@ var appController = (function(uiController, financeController){
 
              var tusuv = financeController.tusviigAvah();
 
-            console.log(tusuv);
+             uiController.tusviigUzuuleh(tusuv);
 
 
         }
@@ -210,10 +233,17 @@ var appController = (function(uiController, financeController){
             }
         });
     };
+    
 
     return{
         init: function(){
             console.log("Application started...");
+            uiController.tusviigUzuuleh({
+                tusuv: 0,
+                huvi: 0,
+                totalInc: 0,
+                totalExp: 0
+            });
             setupEventlistener();
         }
     };
