@@ -220,16 +220,18 @@ var appController = (function(uiController, financeController){
              uiController.addListItem(item, input.type);
              uiController.clearFields();
 
-             // эцсийн үлдэгдэл, тооцоог дэлгэцэнд гаргана.
+             updateTusuv();
+
+            }
+    };
+    var updateTusuv = function(){
+            // эцсийн үлдэгдэл, тооцоог дэлгэцэнд гаргана.
              financeController.tusuvTootsooloh();
 
-             var tusuv = financeController.tusviigAvah();
-
-             uiController.tusviigUzuuleh(tusuv);
-
-
-        }
-};
+              var tusuv = financeController.tusviigAvah();
+          
+              uiController.tusviigUzuuleh(tusuv);
+    };
         
 
     var setupEventlistener = function(){
@@ -260,6 +262,7 @@ var appController = (function(uiController, financeController){
             uiController.deleteListItem(id);
             // Үлдэгдэл тооцоог шинэчилж харуулна.
 
+            updateTusuv();
 
 
            }
