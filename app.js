@@ -6,6 +6,8 @@ var uiController = (function(){
         inputDescription: ".add__description",
         inputValue: ".add__value",
         addBtn: ".add__btn",
+        incList: '.income__list',
+        expList: '.expenses__list',
     };
 
     return {
@@ -13,29 +15,48 @@ var uiController = (function(){
             return{
             type: document.querySelector(DOMstrings.inputType).value,
             description: document.querySelector(DOMstrings.inputDescription).value,
-            value: document.querySelector(DOMstrings.inputValue).value,
+            value: parseInt( document.querySelector(DOMstrings.inputValue).value )
             };
         },
         getDOMstrings: function(){
             return DOMstrings;
         },
+
+        clearFields: function(){
+            var fields = document.querySelectorAll(DOMstrings.inputDescription + ', ' + DOMstrings.inputValue);
+            // Convert list to Array
+            var fieldsArr = Array.prototype.slice.call(fields);
+
+            fieldsArr.forEach(function(el, index, Array) {
+                el.value = "";
+            });
+            fieldsArr[0].focus();
+
+            // for(var i = 0; i < fieldsArr.length; i++){
+            //     fieldsArr[i].value = "";
+            // }
+            
+        },
+
+
+
+
         addListItem: function(item, type){
             
             var html, art;
             if(type === "inc"){
-                list = '.income__list';
-                html = '<div class="item clearfix" id="income-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value"><$$VALUE$$<div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
-            }
-            else{
-                list = '.expense__list';
-                html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value"><$$VALUE$$</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+                list = DOMstrings.incList;
+                html = '<div class="item clearfix" id="income-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value">+ $$VALUE$$<div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+            }else{
+                list = DOMstrings.expList;
+                html = '<div class="item clearfix" id="expense-%id%"><divclass="item__description">$$DESCRIPTION$$</divclass=><div class="right clearfix"><div class="item__value">- $$VALUE$$</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }
 
             html = html.replace("%id%", item.id);
             html = html.replace("$$DESCRIPTION$$", item.description);
-            html = html.replace("<$$VALUE$$", item.value);
+            html = html.replace("$$VALUE$$", item.value);
 
-            document.querySelector(list).insertAdjacentHTML('beforeend', html);
+            document.querySelector(list).insertAdjacentHTML("beforeend", html);
 
 
 
@@ -57,6 +78,16 @@ var financeController = (function(){
         this.value = value;
     };
 
+    var calculateTotal = function(type){
+        var sum = 0;
+    data.items[type].forEach(function(el){
+        sum = sum + el.value;
+    });
+
+    data.totals[type] = sum;
+
+    };
+
     var data = {
         items:{
             inc:[],
@@ -65,10 +96,43 @@ var financeController = (function(){
         totals: {
             inc: 0,
             exp: 0,
-        }
+        },
+
+        tusuv: 0,
+
+        huvi: 0,
     };
 
+
     return {
+        tusuvTootsooloh: function(){
+            // Нийт орлогын нийлбэрийг тооцоолно
+            calculateTotal("inc");
+
+            // Нийт зарлагын нийлбэрийг тооцоолно
+            calculateTotal("exp");
+
+            // Төсөвийг шинээр тооцоолно
+            data.tusuv = data.totals.inc - data.totals.exp;
+
+            // Орлого зарлагын хувийг тооцоолно
+
+            data.huvi = Math.round((data.totals.exp / data.totals.inc) * 100);
+
+
+        },
+
+        tusviigAvah: function(){
+            return{
+                tusuv: data.tusuv,
+                hivi: data.huvi,
+                totalInc: data.totals.inc,
+                totalExp: data.totals.exp
+            }
+        },
+
+
+
         addItem: function(type, desc, val){
             var item, id;
 
@@ -106,14 +170,31 @@ var appController = (function(uiController, financeController){
 
         // оруулах өгөгдөлийг олж авах
         var input = uiController.getInput();
-        // олж авсан өгөгдөлөө санхүүгийн конироллер дамжуулна
-        var item = financeController.addItem(input.type, input.description, input.value);
 
+        if (input.description !== "" && input.value !== ""){
+             // олж авсан өгөгдөлөө санхүүгийн конироллер дамжуулна
+             var item = financeController.addItem(
+                input.type, 
+                input.description, 
+                input.value
+            );
         
-        // олж авсан өгөгдөлийг веб дээрх тохирох хэсэгт гаргана
-        uiController.addListItem(item, input.type);
-        // эцсийн үлдэгдэл, тооцоог дэлгэцэнд гаргана.
-    };
+                
+             // олж авсан өгөгдөлийг веб дээрх тохирох хэсэгт гаргана
+             uiController.addListItem(item, input.type);
+             uiController.clearFields();
+
+             // эцсийн үлдэгдэл, тооцоог дэлгэцэнд гаргана.
+             financeController.tusuvTootsooloh();
+
+             var tusuv = financeController.tusviigAvah();
+
+            console.log(tusuv);
+
+
+        }
+};
+        
 
     var setupEventlistener = function(){
 
