@@ -33,7 +33,7 @@ var uiController = (function(){
         },
 
 
-        displayPercentage: function(allPercentages){
+        displayPercentages: function(allPercentages){
             var elements = document.querySelectorAll(DOMstrings.expensePercentageLabel);
             nodeListForeach(elements, function(el, index){
                 el.textContent = allPercentages[index];
